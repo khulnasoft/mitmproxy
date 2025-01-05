@@ -3,8 +3,6 @@ import logging
 import sys
 
 from mitmproxy import log
-from mitmproxy.contrib import click as miniclick
-from mitmproxy.utils import vt_codes
 
 
 class ErrorCheck:
@@ -31,13 +29,8 @@ class ErrorCheck:
         if self.logger.has_errored:
             plural = "s" if len(self.logger.has_errored) > 1 else ""
             if self.repeat_errors_on_stderr:
-                message = f"Error{plural} logged during startup:"
-                if vt_codes.ensure_supported(sys.stderr):  # pragma: no cover
-                    message = miniclick.style(message, fg="red")
-                details = "\n".join(
-                    self.logger.format(r) for r in self.logger.has_errored
-                )
-                print(f"{message}\n{details}", file=sys.stderr)
+                msg = "\n".join(self.logger.format(r) for r in self.logger.has_errored)
+                print(f"Error{plural} logged during startup:\n{msg}", file=sys.stderr)
             else:
                 print(
                     f"Error{plural} logged during startup, exiting...", file=sys.stderr

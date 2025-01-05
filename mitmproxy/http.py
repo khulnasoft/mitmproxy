@@ -1,6 +1,7 @@
 import binascii
 import json
 import os
+import re
 import time
 import urllib.parse
 import warnings
@@ -26,7 +27,6 @@ from mitmproxy.net.http import multipart
 from mitmproxy.net.http import status_codes
 from mitmproxy.net.http import url
 from mitmproxy.net.http.headers import assemble_content_type
-from mitmproxy.net.http.headers import infer_content_encoding
 from mitmproxy.net.http.headers import parse_content_type
 from mitmproxy.utils import human
 from mitmproxy.utils import strutils
@@ -402,11 +402,45 @@ class Message(serializable.Serializable):
         else:
             return self.raw_content
 
+    def _get_content_type_charset(self) -> str | None:
+        ct = parse_content_type(self.headers.get("content-type", ""))
+        if ct:
+            return ct[2].get("charset")
+        return None
+
+    def _guess_encoding(self, content: bytes = b"") -> str:
+        enc = self._get_content_type_charset()
+        if not enc:
+            if "json" in self.headers.get("content-type", ""):
+                enc = "utf8"
+        if not enc:
+            if "html" in self.headers.get("content-type", ""):
+                meta_charset = re.search(
+                    rb"""<meta[^>]+charset=['"]?([^'">]+)""", content, re.IGNORECASE
+                )
+                if meta_charset:
+                    enc = meta_charset.group(1).decode("ascii", "ignore")
+        if not enc:
+            if "text/css" in self.headers.get("content-type", ""):
+                # @charset rule must be the very first thing.
+                css_charset = re.match(
+                    rb"""@charset "([^"]+)";""", content, re.IGNORECASE
+                )
+                if css_charset:
+                    enc = css_charset.group(1).decode("ascii", "ignore")
+        if not enc:
+            enc = "latin-1"
+        # Use GB 18030 as the superset of GB2312 and GBK to fix common encoding problems on Chinese websites.
+        if enc.lower() in ("gb2312", "gbk"):
+            enc = "gb18030"
+
+        return enc
+
     def set_text(self, text: str | None) -> None:
         if text is None:
             self.content = None
             return
-        enc = infer_content_encoding(self.headers.get("content-type", ""))
+        enc = self._guess_encoding()
 
         try:
             self.content = cast(bytes, encoding.encode(text, enc))
@@ -430,7 +464,7 @@ class Message(serializable.Serializable):
         content = self.get_content(strict)
         if content is None:
             return None
-        enc = infer_content_encoding(self.headers.get("content-type", ""), content)
+        enc = self._guess_encoding(content)
         try:
             return cast(str, encoding.decode(content, enc))
         except ValueError:
@@ -979,9 +1013,9 @@ class Request(Message):
             on generating the boundary.
             """
             boundary = "-" * 20 + binascii.hexlify(os.urandom(16)).decode()
-            self.headers["content-type"] = ct = (
-                f"multipart/form-data; boundary={boundary}"
-            )
+            self.headers["content-type"] = (
+                ct
+            ) = f"multipart/form-data; boundary={boundary}"
         self.content = multipart.encode_multipart(ct, value)
 
     @property

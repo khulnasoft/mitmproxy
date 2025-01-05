@@ -1,16 +1,16 @@
 import reduceOptionsEditor, * as optionsEditorActions from "../../../ducks/ui/optionsEditor";
 import { HIDE_MODAL } from "../../../ducks/ui/modal";
-import { defaultState } from "../../../ducks/ui/optionsEditor";
+import { OptionsState } from "../../../ducks/_options_gen";
 
 describe("optionsEditor reducer", () => {
     it("should return initial state", () => {
-        expect(defaultState).toEqual({});
+        expect(reduceOptionsEditor(undefined, {})).toEqual({});
     });
 
     it("should handle option update start", () => {
-        const state = reduceOptionsEditor(
+        let state = reduceOptionsEditor(
             undefined,
-            optionsEditorActions.startUpdate({ option: "foo", value: "bar" }),
+            optionsEditorActions.startUpdate("foo", "bar")
         );
         expect(state).toEqual({
             foo: { error: false, isUpdating: true, value: "bar" },
@@ -21,22 +21,19 @@ describe("optionsEditor reducer", () => {
         expect(
             reduceOptionsEditor(
                 undefined,
-                optionsEditorActions.updateSuccess({ option: "foo" }),
-            ),
+                optionsEditorActions.updateSuccess("foo")
+            )
         ).toEqual({ foo: undefined });
     });
 
     it("should handle option update error", () => {
         let state = reduceOptionsEditor(
             undefined,
-            optionsEditorActions.startUpdate({ option: "foo", value: "bar" }),
+            optionsEditorActions.startUpdate("foo", "bar")
         );
         state = reduceOptionsEditor(
             state,
-            optionsEditorActions.updateError({
-                option: "foo",
-                error: "errorMsg",
-            }),
+            optionsEditorActions.updateError("foo", "errorMsg")
         );
         expect(state).toEqual({
             foo: { error: "errorMsg", isUpdating: false, value: "bar" },
@@ -44,14 +41,11 @@ describe("optionsEditor reducer", () => {
         // boolean type
         state = reduceOptionsEditor(
             undefined,
-            optionsEditorActions.startUpdate({ option: "foo", value: true }),
+            optionsEditorActions.startUpdate("foo", true)
         );
         state = reduceOptionsEditor(
             state,
-            optionsEditorActions.updateError({
-                option: "foo",
-                error: "errorMsg",
-            }),
+            optionsEditorActions.updateError("foo", "errorMsg")
         );
         expect(state).toEqual({
             foo: { error: "errorMsg", isUpdating: false, value: false },
@@ -60,7 +54,7 @@ describe("optionsEditor reducer", () => {
 
     it("should handle hide modal", () => {
         expect(reduceOptionsEditor(undefined, { type: HIDE_MODAL })).toEqual(
-            {},
+            {}
         );
     });
 });

@@ -1,56 +1,73 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { Option, OptionsState } from "../_options_gen";
 import { HIDE_MODAL } from "./modal";
 
-interface OptionUpdate<T> {
-    isUpdating: boolean;
-    value: T;
-    error: string | false;
-}
+export const OPTION_UPDATE_START = "UI_OPTION_UPDATE_START";
+export const OPTION_UPDATE_SUCCESS = "UI_OPTION_UPDATE_SUCCESS";
+export const OPTION_UPDATE_ERROR = "UI_OPTION_UPDATE_ERROR";
 
-type OptionsEditorState = Partial<{
-    [name in Option]: OptionUpdate<OptionsState[name]>;
-}>;
+const defaultState = {
+    /* optionName -> {isUpdating, value (client-side), error} */
+};
 
-export const defaultState: OptionsEditorState = {};
-
-const optionsEditorSlice = createSlice({
-    name: "ui/optionsEditor",
-    initialState: defaultState,
-    reducers: {
-        startUpdate(state, action: PayloadAction<{ option: any; value: any }>) {
-            state[action.payload.option] = {
-                isUpdating: true,
-                value: action.payload.value,
-                error: false,
+export default function reducer(state = defaultState, action) {
+    switch (action.type) {
+        case OPTION_UPDATE_START:
+            return {
+                ...state,
+                [action.option]: {
+                    isUpdating: true,
+                    value: action.value,
+                    error: false,
+                },
             };
-        },
-        updateSuccess(state, action: PayloadAction<{ option: any }>) {
-            state[action.payload.option] = undefined;
-        },
-        updateError(
-            state,
-            action: PayloadAction<{ option: any; error: string | false }>,
-        ) {
-            let val = state[action.payload.option]!.value;
+
+        case OPTION_UPDATE_SUCCESS:
+            return {
+                ...state,
+                [action.option]: undefined,
+            };
+
+        case OPTION_UPDATE_ERROR:
+            let val = state[action.option].value;
             if (typeof val === "boolean") {
+                // If a boolean option errs, reset it to its previous state to be less confusing.
+                // Example: Start mitmweb, check "add_upstream_certs_to_client_chain".
                 val = !val;
             }
-            state[action.payload.option] = {
-                value: val,
-                isUpdating: false,
-                error: action.payload.error,
+            return {
+                ...state,
+                [action.option]: {
+                    value: val,
+                    isUpdating: false,
+                    error: action.error,
+                },
             };
-        },
-    },
-    extraReducers: (builder) => {
-        // this action type comes from ducks/ui/modal.ts. Once it's received, the state is reset.
-        builder.addCase(HIDE_MODAL, () => {
-            return defaultState;
-        });
-    },
-});
 
-const { actions, reducer } = optionsEditorSlice;
-export const { startUpdate, updateSuccess, updateError } = actions;
-export default reducer;
+        case HIDE_MODAL:
+            return {};
+
+        default:
+            return state;
+    }
+}
+
+export function startUpdate(option, value) {
+    return {
+        type: OPTION_UPDATE_START,
+        option,
+        value,
+    };
+}
+export function updateSuccess(option) {
+    return {
+        type: OPTION_UPDATE_SUCCESS,
+        option,
+    };
+}
+
+export function updateError(option, error) {
+    return {
+        type: OPTION_UPDATE_ERROR,
+        option,
+        error,
+    };
+}

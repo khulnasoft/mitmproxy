@@ -267,7 +267,7 @@ class OptManager:
         if attr not in self._options:
             raise KeyError("No such option: %s" % attr)
         o = self._options[attr]
-        if o.typespec is not bool:
+        if o.typespec != bool:
             raise ValueError("Toggler can only be used with boolean options")
 
         def toggle():
@@ -379,7 +379,7 @@ class OptManager:
             optstr = None
 
         if o.typespec in (str, Optional[str]):
-            if o.typespec is str and optstr is None:
+            if o.typespec == str and optstr is None:
                 raise exceptions.OptionsError(f"Option is required: {o.name}")
             return optstr
         elif o.typespec in (int, Optional[int]):
@@ -388,11 +388,11 @@ class OptManager:
                     return int(optstr)
                 except ValueError:
                     raise exceptions.OptionsError(f"Not an integer: {optstr}")
-            elif o.typespec is int:
+            elif o.typespec == int:
                 raise exceptions.OptionsError(f"Option is required: {o.name}")
             else:
                 return None
-        elif o.typespec is bool:
+        elif o.typespec == bool:
             if optstr == "toggle":
                 return not o.current()
             if not optstr or optstr == "true":
@@ -424,7 +424,7 @@ class OptManager:
 
         flags = mkf(optname, short)
 
-        if o.typespec is bool:
+        if o.typespec == bool:
             g = parser.add_mutually_exclusive_group(required=False)
             onf = mkf(optname, None)
             offf = mkf("no-" + optname, None)
@@ -523,7 +523,7 @@ def parse(text):
     if not text:
         return {}
     try:
-        yaml = ruamel.yaml.YAML(typ="safe", pure=True)
+        yaml = ruamel.yaml.YAML(typ="unsafe", pure=True)
         data = yaml.load(text)
     except ruamel.yaml.error.YAMLError as v:
         if hasattr(v, "problem_mark"):

@@ -8,11 +8,13 @@ from typing import overload
 
 
 @overload
-def always_bytes(str_or_bytes: None, *encode_args) -> None: ...
+def always_bytes(str_or_bytes: None, *encode_args) -> None:
+    ...
 
 
 @overload
-def always_bytes(str_or_bytes: str | bytes, *encode_args) -> bytes: ...
+def always_bytes(str_or_bytes: str | bytes, *encode_args) -> bytes:
+    ...
 
 
 def always_bytes(str_or_bytes: None | str | bytes, *encode_args) -> None | bytes:
@@ -27,11 +29,13 @@ def always_bytes(str_or_bytes: None | str | bytes, *encode_args) -> None | bytes
 
 
 @overload
-def always_str(str_or_bytes: None, *encode_args) -> None: ...
+def always_str(str_or_bytes: None, *encode_args) -> None:
+    ...
 
 
 @overload
-def always_str(str_or_bytes: str | bytes, *encode_args) -> str: ...
+def always_str(str_or_bytes: str | bytes, *encode_args) -> str:
+    ...
 
 
 def always_str(str_or_bytes: None | str | bytes, *decode_args) -> None | str:

@@ -30,7 +30,6 @@ Configuration:
         dump_destination: "/user/rastley/output.log"
         EOF
 """
-
 import base64
 import json
 import logging

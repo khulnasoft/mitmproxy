@@ -1,7 +1,6 @@
 """
 Base class for protocol layers.
 """
-
 import collections
 import textwrap
 from abc import abstractmethod
@@ -28,7 +27,7 @@ A function annotated with CommandGenerator[bool] may yield commands and ultimate
 """
 
 
-MAX_LOG_STATEMENT_SIZE = 2048
+MAX_LOG_STATEMENT_SIZE = 512
 """Maximum size of individual log statements before they will be truncated."""
 
 

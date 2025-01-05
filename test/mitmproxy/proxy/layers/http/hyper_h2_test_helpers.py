@@ -7,7 +7,6 @@ helpers
 
 This module contains helpers for the h2 tests.
 """
-
 from hpack.hpack import Encoder
 from hyperframe.frame import AltSvcFrame
 from hyperframe.frame import ContinuationFrame

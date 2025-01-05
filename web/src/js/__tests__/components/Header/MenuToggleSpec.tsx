@@ -5,40 +5,37 @@ import {
     MenuToggle,
     OptionsToggle,
 } from "../../../components/Header/MenuToggle";
-import { fireEvent, render, screen, waitFor } from "../../test-utils";
-
-import { enableFetchMocks } from "jest-fetch-mock";
-
-enableFetchMocks();
+import { Provider } from "react-redux";
+import { TStore } from "../../ducks/tutils";
+import * as optionsEditorActions from "../../../ducks/ui/optionsEditor";
+import { fireEvent, render, screen } from "../../test-utils";
 
 describe("MenuToggle Component", () => {
     it("should render correctly", () => {
-        const changeFn = jest.fn();
-        const menuToggle = renderer.create(
-            <MenuToggle onChange={changeFn} value={true}>
-                <p>foo children</p>
-            </MenuToggle>,
-        );
-        const tree = menuToggle.toJSON();
+        let changeFn = jest.fn(),
+            menuToggle = renderer.create(
+                <MenuToggle onChange={changeFn} value={true}>
+                    <p>foo children</p>
+                </MenuToggle>
+            ),
+            tree = menuToggle.toJSON();
         expect(tree).toMatchSnapshot();
     });
 });
 
 test("OptionsToggle", async () => {
-    fetchMock.mockReject(new Error("backend missing"));
-
-    const { asFragment, store } = render(
-        <OptionsToggle name="anticache">toggle anticache</OptionsToggle>,
-    );
+    const store = TStore(),
+        { asFragment } = render(
+            <OptionsToggle name="anticache">toggle anticache</OptionsToggle>,
+            { store }
+        );
+    globalThis.fetch = jest.fn();
 
     expect(asFragment()).toMatchSnapshot();
     fireEvent.click(screen.getByText("toggle anticache"));
-
-    await waitFor(() =>
-        expect(
-            store.getState().ui.optionsEditor.anticache?.error.toString(),
-        ).toContain("backend missing"),
-    );
+    expect(store.getActions()).toEqual([
+        optionsEditorActions.startUpdate("anticache", true),
+    ]);
 });
 
 test("EventlogToggle", async () => {

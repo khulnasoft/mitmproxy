@@ -14,9 +14,7 @@ if __name__ == "__main__":
     if ref.startswith("refs/heads/"):
         branch = ref.replace("refs/heads/", "")
     elif ref.startswith("refs/tags/"):
-        if not ref.startswith("refs/tags/v"):
-            raise AssertionError(f"Unexpected tag: {ref}")
-        tag = ref.replace("refs/tags/v", "")
+        tag = ref.replace("refs/tags/", "")
     else:
         raise AssertionError
 

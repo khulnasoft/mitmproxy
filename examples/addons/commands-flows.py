@@ -1,5 +1,4 @@
 """Handle flows as command arguments."""
-
 import logging
 from collections.abc import Sequence
 

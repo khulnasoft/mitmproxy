@@ -682,7 +682,7 @@ def test_configure():
     [
         [":default:", SYMBOL_MARK],
         ["X", "X"],
-        [":grapes:", "\N{GRAPES}"],
+        [":grapes:", "\N{grapes}"],
         [":not valid:", SYMBOL_MARK],
         [":weird", SYMBOL_MARK],
     ],

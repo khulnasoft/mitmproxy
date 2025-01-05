@@ -146,6 +146,7 @@ def gen_rgb_gradient(palette, cols):
 
 
 class LowDark(Palette):
+
     """
     Low-color dark background
     """
@@ -246,6 +247,7 @@ class Dark(LowDark):
 
 
 class LowLight(Palette):
+
     """
     Low-color light background
     """

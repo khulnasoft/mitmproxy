@@ -1,7 +1,6 @@
 """
 This addon is responsible for starting/stopping the proxy server sockets/instances specified by the mode option.
 """
-
 from __future__ import annotations
 
 import asyncio
@@ -34,7 +33,6 @@ from mitmproxy.proxy.layers.websocket import WebSocketMessageInjected
 from mitmproxy.proxy.mode_servers import ProxyConnectionHandler
 from mitmproxy.proxy.mode_servers import ServerInstance
 from mitmproxy.proxy.mode_servers import ServerManager
-from mitmproxy.utils import asyncio_utils
 from mitmproxy.utils import human
 from mitmproxy.utils import signals
 
@@ -76,11 +74,6 @@ class Servers:
                 if spec not in new_instances
             ]
 
-            if not start_tasks and not stop_tasks:
-                return (
-                    True  # nothing to do, so we don't need to trigger `self.changed`.
-                )
-
             self._instances = new_instances
             # Notify listeners about the new not-yet-started servers.
             await self.changed.send()
@@ -121,13 +114,11 @@ class Proxyserver(ServerManager):
     is_running: bool
     _connect_addr: Address | None = None
     _update_task: asyncio.Task | None = None
-    _inject_tasks: set[asyncio.Task]
 
     def __init__(self):
         self.connections = {}
         self.servers = Servers(self)
         self.is_running = False
-        self._inject_tasks = set()
 
     def __repr__(self):
         return f"Proxyserver({len(self.connections)} active conns)"
@@ -259,18 +250,14 @@ class Proxyserver(ServerManager):
                     )
 
             # ...and don't listen on the same address.
-            listen_addrs = []
-            for m in modes:
-                if m.transport_protocol == "both":
-                    protocols = ["tcp", "udp"]
-                else:
-                    protocols = [m.transport_protocol]
-                host = m.listen_host(ctx.options.listen_host)
-                port = m.listen_port(ctx.options.listen_port)
-                if port is None:
-                    continue
-                for proto in protocols:
-                    listen_addrs.append((host, port, proto))
+            listen_addrs = [
+                (
+                    m.listen_host(ctx.options.listen_host),
+                    m.listen_port(ctx.options.listen_port),
+                    m.transport_protocol,
+                )
+                for m in modes
+            ]
             if len(set(listen_addrs)) != len(listen_addrs):
                 (host, port, _) = collections.Counter(listen_addrs).most_common(1)[0][0]
                 dup_addr = human.format_address((host or "0.0.0.0", port))
@@ -289,9 +276,7 @@ class Proxyserver(ServerManager):
                     )
 
             if self.is_running:
-                self._update_task = asyncio_utils.create_task(
-                    self.servers.update(modes), name="update servers"
-                )
+                self._update_task = asyncio.create_task(self.servers.update(modes))
 
     async def setup_servers(self) -> bool:
         """Setup proxy servers. This may take an indefinite amount of time to complete (e.g. on permission prompts)."""
@@ -314,15 +299,7 @@ class Proxyserver(ServerManager):
             )
         if connection_id not in self.connections:
             raise ValueError("Flow is not from a live connection.")
-
-        t = asyncio_utils.create_task(
-            self.connections[connection_id].server_event(event),
-            name=f"inject_event",
-            client=event.flow.client_conn.peername,
-        )
-        # Python 3.11 Use TaskGroup instead.
-        self._inject_tasks.add(t)
-        t.add_done_callback(self._inject_tasks.remove)
+        self.connections[connection_id].server_event(event)
 
     @command.command("inject.websocket")
     def inject_websocket(
@@ -363,6 +340,7 @@ class Proxyserver(ServerManager):
             logger.warning(str(e))
 
     def server_connect(self, data: server_hooks.ServerConnectionHookData):
+        return # :)
         if data.server.sockname is None:
             data.server.sockname = self._connect_addr
 

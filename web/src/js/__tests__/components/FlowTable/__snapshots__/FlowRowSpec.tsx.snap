@@ -5,7 +5,7 @@ exports[`FlowRow 1`] = `
   <table>
     <tbody>
       <tr
-        class="selected highlighted"
+        class="selected highlighted intercepted has-request has-response"
       >
         <td
           class="col-tls col-tls-https"
@@ -14,44 +14,58 @@ exports[`FlowRow 1`] = `
           class="col-icon"
         >
           <div
-            class="resource-icon resource-icon-dns"
+            class="resource-icon resource-icon-websocket"
           />
         </td>
         <td
           class="col-path"
         >
           <i
+            class="fa fa-fw fa-pause pull-right"
+          />
+          <i
             class="fa fa-fw fa-exclamation pull-right"
           />
           <span
             class="marker pull-right"
           />
-          dns.google A = 8.8.8.8, 8.8.4.4
+          http://address:22/path
         </td>
         <td
           class="col-method"
         >
-          QUERY
+          WSS
         </td>
         <td
           class="col-status"
           style="color: darkgreen;"
         >
-          NOERROR
+          200
         </td>
         <td
           class="col-size"
         >
-          8b
+          43b
         </td>
         <td
           class="col-time"
         >
-          1s
+          5s
         </td>
         <td
           class="col-quickactions"
-        />
+        >
+          <div>
+            <a
+              class="quickaction"
+              href="#"
+            >
+              <i
+                class="fa fa-fw fa-play text-success"
+              />
+            </a>
+          </div>
+        </td>
       </tr>
     </tbody>
   </table>

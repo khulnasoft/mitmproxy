@@ -6,7 +6,6 @@ import json
 import logging
 import os.path
 import re
-import sys
 from collections.abc import Callable
 from collections.abc import Sequence
 from io import BytesIO
@@ -19,7 +18,6 @@ import tornado.websocket
 
 import mitmproxy.flow
 import mitmproxy.tools.web.master
-import mitmproxy_rs
 from mitmproxy import certs
 from mitmproxy import command
 from mitmproxy import contentviews
@@ -39,12 +37,6 @@ from mitmproxy.utils.emoji import emoji
 from mitmproxy.utils.strutils import always_str
 from mitmproxy.websocket import WebSocketMessage
 
-TRANSPARENT_PNG = (
-    b"\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR\x00\x00\x00\x01\x00\x00\x00\x01\x08"
-    b"\x04\x00\x00\x00\xb5\x1c\x0c\x02\x00\x00\x00\x0bIDATx\xdac\xfc\xff\x07"
-    b"\x00\x02\x00\x01\xfc\xa8Q\rh\x00\x00\x00\x00IEND\xaeB`\x82"
-)
-
 
 def cert_to_json(certs: Sequence[certs.Cert]) -> dict | None:
     if not certs:
@@ -58,7 +50,7 @@ def cert_to_json(certs: Sequence[certs.Cert]) -> dict | None:
         "serial": str(cert.serial),
         "subject": cert.subject,
         "issuer": cert.issuer,
-        "altnames": [str(x.value) for x in cert.altnames],
+        "altnames": cert.altnames,
     }
 
 
@@ -292,7 +284,7 @@ class WebSocketEventBroadcaster(tornado.websocket.WebSocketHandler):
     connections: ClassVar[set[WebSocketEventBroadcaster]]
     _send_tasks: ClassVar[set[asyncio.Task]] = set()
 
-    def open(self, *args, **kwargs):
+    def open(self):
         self.connections.add(self)
 
     def on_close(self):
@@ -316,7 +308,7 @@ class WebSocketEventBroadcaster(tornado.websocket.WebSocketHandler):
             "utf8", "surrogateescape"
         )
 
-        for conn in cls.connections.copy():
+        for conn in cls.connections:
             cls.send(conn, message)
 
 
@@ -456,8 +448,6 @@ class FlowHandler(RequestHandler):
                             raise APIError(400, f"Unknown update response.{k}: {v}")
                 elif a == "marked":
                     flow.marked = b
-                elif a == "comment":
-                    flow.comment = b
                 else:
                     raise APIError(400, f"Unknown update {a}: {b}")
         except APIError:
@@ -645,57 +635,16 @@ class DnsRebind(RequestHandler):
 
 
 class State(RequestHandler):
-    # Separate method for testability.
-    @staticmethod
-    def get_json(master: mitmproxy.tools.web.master.WebMaster):
-        return {
-            "version": version.VERSION,
-            "contentViews": [v.name for v in contentviews.views if v.name != "Query"],
-            "servers": {
-                s.mode.full_spec: s.to_json() for s in master.proxyserver.servers
-            },
-            "platform": sys.platform,
-            "localModeUnavailable": mitmproxy_rs.local.LocalRedirector.unavailable_reason(),
-        }
-
     def get(self):
-        self.write(State.get_json(self.master))
-
-
-class ProcessList(RequestHandler):
-    @staticmethod
-    def get_json():
-        processes = mitmproxy_rs.process_info.active_executables()
-        return [
+        self.write(
             {
-                "is_visible": process.is_visible,
-                "executable": process.executable,
-                "is_system": process.is_system,
-                "display_name": process.display_name,
+                "version": version.VERSION,
+                "contentViews": [
+                    v.name for v in contentviews.views if v.name != "Query"
+                ],
+                "servers": [s.to_json() for s in self.master.proxyserver.servers],
             }
-            for process in processes
-        ]
-
-    def get(self):
-        self.write(ProcessList.get_json())
-
-
-class ProcessImage(RequestHandler):
-    def get(self):
-        path = self.get_query_argument("path", None)
-
-        if not path:
-            raise APIError(400, "Missing 'path' parameter.")
-
-        try:
-            icon_bytes = mitmproxy_rs.process_info.executable_icon(path)
-        except Exception:
-            icon_bytes = TRANSPARENT_PNG
-
-        self.set_header("Content-Type", "image/png")
-        self.set_header("X-Content-Type-Options", "nosniff")
-        self.set_header("Cache-Control", "max-age=604800")
-        self.write(icon_bytes)
+        )
 
 
 class GZipContentAndFlowFiles(tornado.web.GZipContentEncoding):
@@ -757,7 +706,5 @@ class Application(tornado.web.Application):
                 (r"/options(?:\.json)?", Options),
                 (r"/options/save", SaveOptions),
                 (r"/state(?:\.json)?", State),
-                (r"/processes", ProcessList),
-                (r"/executable-icon", ProcessImage),
             ],
         )

@@ -1,5 +1,4 @@
 """Take incoming HTTP requests and replay them with modified parameters."""
-
 from mitmproxy import ctx
 
 

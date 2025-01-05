@@ -1,5 +1,4 @@
 """Send a reply from the proxy without sending the request to the remote server."""
-
 from mitmproxy import http
 
 

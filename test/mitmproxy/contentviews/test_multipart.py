@@ -1,6 +1,5 @@
 from . import full_eval
 from mitmproxy.contentviews import multipart
-from mitmproxy.test import tutils
 
 
 def test_view_multipart():
@@ -13,14 +12,6 @@ Larry
 --AaB03x
         """.strip()
     assert view(v, content_type="multipart/form-data; boundary=AaB03x")
-
-    req = tutils.treq()
-    req.headers["content-type"] = "multipart/form-data; boundary=AaB03x"
-    req.content = v
-
-    assert view(
-        v, content_type="multipart/form-data; boundary=AaB03x", http_message=req
-    )
 
     assert not view(v)
 

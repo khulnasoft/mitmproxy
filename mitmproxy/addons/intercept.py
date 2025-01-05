@@ -58,6 +58,3 @@ class Intercept:
 
     def dns_response(self, f):
         self.process_flow(f)
-
-    def websocket_message(self, f):
-        self.process_flow(f)

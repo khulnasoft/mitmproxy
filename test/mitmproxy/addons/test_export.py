@@ -58,11 +58,6 @@ def udp_flow():
     return tflow.tudpflow()
 
 
-@pytest.fixture
-def websocket_flow():
-    return tflow.twebsocketflow()
-
-
 @pytest.fixture(scope="module")
 def export_curl():
     e = export.Export()
@@ -222,11 +217,6 @@ class TestRaw:
         ):
             export.raw(udp_flow)
 
-    def test_websocket(self, websocket_flow):
-        assert b"hello binary" in export.raw(websocket_flow)
-        assert b"hello text" in export.raw(websocket_flow)
-        assert b"it's me" in export.raw(websocket_flow)
-
 
 class TestRawRequest:
     def test_get(self, get_request):
@@ -293,10 +283,6 @@ def test_export(tmp_path) -> None:
         os.unlink(f)
 
         e.file("httpie", tflow.tflow(resp=True), f)
-        assert qr(f)
-        os.unlink(f)
-
-        e.file("raw", tflow.twebsocketflow(), f)
         assert qr(f)
         os.unlink(f)
 

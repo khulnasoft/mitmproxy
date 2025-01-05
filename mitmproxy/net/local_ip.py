@@ -10,16 +10,14 @@ def get_local_ip(reachable: str = "8.8.8.8") -> str | None:
     We use Google DNS's IPv4 address as the default.
     """
     # https://stackoverflow.com/questions/166506/finding-local-ip-addresses-using-pythons-stdlib
-    s = None
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     try:
-        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         s.connect((reachable, 80))
-        return s.getsockname()[0]  # pragma: no cover
+        return s.getsockname()[0]
     except OSError:
-        return None  # pragma: no cover
+        return None
     finally:
-        if s is not None:
-            s.close()
+        s.close()
 
 
 def get_local_ip6(reachable: str = "2001:4860:4860::8888") -> str | None:
@@ -28,13 +26,11 @@ def get_local_ip6(reachable: str = "2001:4860:4860::8888") -> str | None:
     This will fail if the target address is known to be unreachable.
     We use Google DNS's IPv6 address as the default.
     """
-    s = None
+    s = socket.socket(socket.AF_INET6, socket.SOCK_DGRAM)
     try:
-        s = socket.socket(socket.AF_INET6, socket.SOCK_DGRAM)
         s.connect((reachable, 80))
-        return s.getsockname()[0]  # pragma: no cover
+        return s.getsockname()[0]
     except OSError:
-        return None  # pragma: no cover
+        return None
     finally:
-        if s is not None:
-            s.close()
+        s.close()

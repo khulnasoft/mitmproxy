@@ -113,11 +113,6 @@
         background-color: rgba(0, 185, 0, 0.5);
     }
 
-    .col-index {
-        text-align: right;
-        width: 4ch;
-    }
-
     .col-icon {
         width: 32px;
     }
@@ -169,15 +164,9 @@
         width: 170px;
     }
 
-    .col-comment {
-        width: 150px;
-        padding-left: 5px;
-    }
-
     td.col-time,
     td.col-size,
-    td.col-timestamp,
-    td.col-comment {
+    td.col-timestamp {
         text-align: right;
     }
 
@@ -192,7 +181,8 @@
         font-size: 20px;
     }
 
-    tr:hover .col-quickactions {
+    tr:hover .col-quickactions,
+    .col-quickactions.hover {
         overflow: visible;
     }
 

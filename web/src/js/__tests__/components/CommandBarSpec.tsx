@@ -48,19 +48,19 @@ test("CommandBar", async () => {
                 return_type: null,
                 signature_help: "flow.encode flows part encoding",
             },
-        }),
+        })
     );
     fetchMock.mockOnceIf(
         "./commands/commands.history.get",
-        JSON.stringify({ value: ["foo"] }),
+        JSON.stringify({ value: ["foo"] })
     );
     fetchMock.mockOnceIf(
         "./commands/commands.history.add",
-        JSON.stringify({ value: null }),
+        JSON.stringify({ value: null })
     );
     fetchMock.mockOnceIf(
         "./commands/flow.encode",
-        JSON.stringify({ value: null }),
+        JSON.stringify({ value: null })
     );
 
     const { asFragment } = render(<CommandBar />);
@@ -70,29 +70,29 @@ test("CommandBar", async () => {
 
     const input = screen.getByPlaceholderText("Enter command");
 
-    await userEvent.type(input, "x");
+    userEvent.type(input, "x");
     expect(screen.getByText("[]")).toBeInTheDocument();
-    await userEvent.type(input, "{backspace}");
+    userEvent.type(input, "{backspace}");
 
-    await userEvent.type(input, "fl");
-    await userEvent.tab();
+    userEvent.type(input, "fl");
+    userEvent.tab();
     expect(input).toHaveValue("flow.decode");
-    await userEvent.tab();
+    userEvent.tab();
     expect(input).toHaveValue("flow.encode");
 
     fetchMock.mockOnce(JSON.stringify({ value: null }));
-    await userEvent.type(input, "{enter}");
+    userEvent.type(input, "{enter}");
     await waitFor(() => screen.getByText("Command Result"));
 
-    await userEvent.type(input, "{arrowdown}");
+    userEvent.type(input, "{arrowdown}");
     expect(input).toHaveValue("");
 
-    await userEvent.type(input, "{arrowup}");
+    userEvent.type(input, "{arrowup}");
     expect(input).toHaveValue("flow.encode");
-    await userEvent.type(input, "{arrowup}");
+    userEvent.type(input, "{arrowup}");
     expect(input).toHaveValue("foo");
-    await userEvent.type(input, "{arrowdown}");
+    userEvent.type(input, "{arrowdown}");
     expect(input).toHaveValue("flow.encode");
-    await userEvent.type(input, "{arrowdown}");
+    userEvent.type(input, "{arrowdown}");
     expect(input).toHaveValue("");
 });

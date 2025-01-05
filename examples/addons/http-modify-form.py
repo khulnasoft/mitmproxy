@@ -1,5 +1,4 @@
 """Modify an HTTP form submission."""
-
 from mitmproxy import http
 
 

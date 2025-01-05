@@ -1,14 +1,17 @@
 import React, { Component } from "react";
+import ReactDOM from "react-dom";
 import classnames from "classnames";
 import Filt from "../../filt/filt";
 import FilterDocs from "./FilterDocs";
 
 type FilterInputProps = {
     type: string;
-    color: string;
+    color: any;
     placeholder: string;
     value: string;
-    onChange: (value: string) => void;
+    onChange: (
+        value
+    ) => { type: string; filter?: string; highlight?: string } | void;
 };
 
 type FilterInputState = {
@@ -21,8 +24,6 @@ export default class FilterInput extends Component<
     FilterInputProps,
     FilterInputState
 > {
-    inputRef = React.createRef<HTMLInputElement>();
-
     constructor(props, context) {
         super(props, context);
 
@@ -48,7 +49,7 @@ export default class FilterInput extends Component<
         this.setState({ value: nextProps.value });
     }
 
-    isValid(filt: string) {
+    isValid(filt) {
         try {
             if (filt) {
                 Filt.parse(filt);
@@ -70,7 +71,7 @@ export default class FilterInput extends Component<
         }
     }
 
-    onChange(e: React.ChangeEvent<HTMLInputElement>) {
+    onChange(e) {
         const value = e.target.value;
         this.setState({ value });
 
@@ -96,26 +97,26 @@ export default class FilterInput extends Component<
         this.setState({ mousefocus: false });
     }
 
-    onKeyDown(e: Partial<React.KeyboardEvent<HTMLInputElement>>) {
+    onKeyDown(e) {
         if (e.key === "Escape" || e.key === "Enter") {
             this.blur();
             // If closed using ESC/ENTER, hide the tooltip.
             this.setState({ mousefocus: false });
         }
-        e.stopPropagation?.();
+        e.stopPropagation();
     }
 
-    selectFilter(cmd: string) {
+    selectFilter(cmd) {
         this.setState({ value: cmd });
-        this.inputRef.current?.focus();
+        ReactDOM.findDOMNode(this.refs.input).focus();
     }
 
     blur() {
-        this.inputRef.current?.blur();
+        ReactDOM.findDOMNode(this.refs.input).blur();
     }
 
     select() {
-        this.inputRef.current?.select();
+        ReactDOM.findDOMNode(this.refs.input).select();
     }
 
     render() {
@@ -132,7 +133,7 @@ export default class FilterInput extends Component<
                 </span>
                 <input
                     type="text"
-                    ref={this.inputRef}
+                    ref="input"
                     placeholder={placeholder}
                     className="form-control"
                     value={value}

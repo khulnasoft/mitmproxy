@@ -2,7 +2,6 @@
 """
 Read a mitmproxy dump file.
 """
-
 import pprint
 import sys
 

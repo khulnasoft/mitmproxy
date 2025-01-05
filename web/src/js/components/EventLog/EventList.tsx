@@ -1,9 +1,10 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
-import * as autoscroll from "../helpers/AutoScroll";
+import ReactDOM from "react-dom";
+import shallowEqual from "shallowequal";
+import AutoScroll from "../helpers/AutoScroll";
 import { calcVScroll, VScroll } from "../helpers/VirtualScroll";
 import { EventLogItem } from "../../ducks/eventLog";
-import { shallowEqual } from "react-redux";
 
 type EventLogListProps = {
     events: EventLogItem[];
@@ -13,10 +14,7 @@ type EventLogListState = {
     vScroll: VScroll;
 };
 
-export default class EventLogList extends Component<
-    EventLogListProps,
-    EventLogListState
-> {
+class EventLogList extends Component<EventLogListProps, EventLogListState> {
     static propTypes = {
         events: PropTypes.array.isRequired,
         rowHeight: PropTypes.number,
@@ -27,8 +25,6 @@ export default class EventLogList extends Component<
     };
 
     heights: { [id: string]: number };
-
-    viewport = React.createRef<HTMLPreElement>();
 
     constructor(props) {
         super(props);
@@ -48,19 +44,12 @@ export default class EventLogList extends Component<
         window.removeEventListener("resize", this.onViewportUpdate);
     }
 
-    getSnapshotBeforeUpdate() {
-        return autoscroll.isAtBottom(this.viewport);
-    }
-
-    componentDidUpdate(prevProps, prevState, snapshot) {
-        if (snapshot) {
-            autoscroll.adjustScrollTop(this.viewport);
-        }
+    componentDidUpdate() {
         this.onViewportUpdate();
     }
 
     onViewportUpdate() {
-        const viewport = this.viewport.current!;
+        const viewport = ReactDOM.findDOMNode(this);
 
         const vScroll = calcVScroll({
             itemCount: this.props.events.length,
@@ -68,7 +57,7 @@ export default class EventLogList extends Component<
             viewportTop: viewport.scrollTop,
             viewportHeight: viewport.offsetHeight,
             itemHeights: this.props.events.map(
-                (entry) => this.heights[entry.id],
+                (entry) => this.heights[entry.id]
             ),
         });
 
@@ -92,7 +81,7 @@ export default class EventLogList extends Component<
         const { events } = this.props;
 
         return (
-            <pre ref={this.viewport} onScroll={this.onViewportUpdate}>
+            <pre onScroll={this.onViewportUpdate}>
                 <div style={{ height: vScroll.paddingTop }} />
                 {events.slice(vScroll.start, vScroll.end).map((event) => (
                     <div
@@ -109,7 +98,7 @@ export default class EventLogList extends Component<
     }
 }
 
-function LogIcon({ event }: { event: EventLogItem }) {
+function LogIcon({ event }) {
     const icon =
         {
             web: "html5",
@@ -119,3 +108,5 @@ function LogIcon({ event }: { event: EventLogItem }) {
         }[event.level] || "info";
     return <i className={`fa fa-fw fa-${icon}`} />;
 }
+
+export default AutoScroll(EventLogList);

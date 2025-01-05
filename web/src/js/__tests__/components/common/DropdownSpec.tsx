@@ -7,13 +7,13 @@ import Dropdown, {
 import { fireEvent, render, screen, waitFor } from "../../test-utils";
 
 test("Dropdown", async () => {
-    const onOpen = jest.fn();
+    let onOpen = jest.fn();
     const { asFragment } = render(
         <Dropdown text="open me" onOpen={onOpen}>
             <MenuItem onClick={() => 0}>click me</MenuItem>
             <Divider />
             <MenuItem onClick={() => 0}>click me</MenuItem>
-        </Dropdown>,
+        </Dropdown>
     );
     expect(asFragment()).toMatchSnapshot();
 
@@ -30,7 +30,7 @@ test("SubMenu", async () => {
     const { asFragment } = render(
         <SubMenu title="submenu">
             <MenuItem onClick={() => 0}>click me</MenuItem>
-        </SubMenu>,
+        </SubMenu>
     );
     expect(asFragment()).toMatchSnapshot();
 
@@ -44,7 +44,7 @@ test("SubMenu", async () => {
 });
 
 test("MenuItem", async () => {
-    const click = jest.fn();
+    let click = jest.fn();
     const { asFragment } = render(<MenuItem onClick={click}>wtf</MenuItem>);
     expect(asFragment()).toMatchSnapshot();
     fireEvent.click(screen.getByText("wtf"));

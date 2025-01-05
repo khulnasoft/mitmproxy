@@ -2,7 +2,6 @@ import urwid
 
 from mitmproxy.test import tflow
 from mitmproxy.tools.console import common
-from mitmproxy.tools.console.common import format_duration
 
 
 def test_format_flow():
@@ -12,13 +11,6 @@ def test_format_flow():
             assert common.format_flow(
                 f, render_mode=render_mode, hostheader=True, focused=False
             )
-
-
-def test_format_durations():
-    assert format_duration(-0.1) == ("-100ms", "gradient_99")
-    assert format_duration(0) == ("0ms", "gradient_99")
-    assert format_duration(0.1) == ("100ms", "gradient_43")
-    assert format_duration(100) == ("100s", "gradient_00")
 
 
 def test_format_keyvals():

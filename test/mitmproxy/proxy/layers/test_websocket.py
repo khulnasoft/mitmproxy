@@ -130,9 +130,7 @@ def test_upgrade(tctx):
 
 
 def test_upgrade_streamed(tctx):
-    """
-    Test that streaming the response does not change behavior.
-    """
+    """If the HTTP response is streamed, we may get early data from the client."""
     tctx.server.address = ("example.com", 80)
     tctx.server.state = ConnectionState.OPEN
     flow = Placeholder(HTTPFlow)
@@ -171,10 +169,6 @@ def test_upgrade_streamed(tctx):
         )
         << http.HttpResponseHeadersHook(flow)
         >> reply(side_effect=enable_streaming)
-        # Current implementation: We know that body size for 101 responses must be zero,
-        # so we never trigger streaming logic in the first place.
-        << http.HttpResponseHook(flow)
-        >> reply()
         << SendData(
             tctx.client,
             b"HTTP/1.1 101 Switching Protocols\r\n"
@@ -182,9 +176,11 @@ def test_upgrade_streamed(tctx):
             b"Connection: Upgrade\r\n"
             b"\r\n",
         )
-        << websocket.WebsocketStartHook(flow)
-        >> DataReceived(tctx.client, masked_bytes(b"\x81\x0bhello world"))  # early data
+        << http.HttpResponseHook(flow)
+        >> DataReceived(tctx.client, masked_bytes(b"\x81\x0bhello world"))  # early !!
         >> reply(to=-2)
+        << websocket.WebsocketStartHook(flow)
+        >> reply()
         << websocket.WebsocketMessageHook(flow)
         >> reply()
         << SendData(tctx.server, masked(b"\x81\x0bhello world"))
@@ -414,9 +410,9 @@ def test_close_code(ws_testdata):
 
 def test_deflate(ws_testdata):
     tctx, playbook, flow = ws_testdata
-    flow.response.headers["Sec-WebSocket-Extensions"] = (
-        "permessage-deflate; server_max_window_bits=10"
-    )
+    flow.response.headers[
+        "Sec-WebSocket-Extensions"
+    ] = "permessage-deflate; server_max_window_bits=10"
     assert (
         playbook
         << websocket.WebsocketStartHook(flow)

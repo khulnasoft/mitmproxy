@@ -1,7 +1,6 @@
 """
 Utility functions for decoding response bodies.
 """
-
 import codecs
 import collections
 import gzip
@@ -21,15 +20,18 @@ _cache = CachedDecode(None, None, None, None)
 
 
 @overload
-def decode(encoded: None, encoding: str, errors: str = "strict") -> None: ...
+def decode(encoded: None, encoding: str, errors: str = "strict") -> None:
+    ...
 
 
 @overload
-def decode(encoded: str, encoding: str, errors: str = "strict") -> str: ...
+def decode(encoded: str, encoding: str, errors: str = "strict") -> str:
+    ...
 
 
 @overload
-def decode(encoded: bytes, encoding: str, errors: str = "strict") -> str | bytes: ...
+def decode(encoded: bytes, encoding: str, errors: str = "strict") -> str | bytes:
+    ...
 
 
 def decode(
@@ -79,15 +81,18 @@ def decode(
 
 
 @overload
-def encode(decoded: None, encoding: str, errors: str = "strict") -> None: ...
+def encode(decoded: None, encoding: str, errors: str = "strict") -> None:
+    ...
 
 
 @overload
-def encode(decoded: str, encoding: str, errors: str = "strict") -> str | bytes: ...
+def encode(decoded: str, encoding: str, errors: str = "strict") -> str | bytes:
+    ...
 
 
 @overload
-def encode(decoded: bytes, encoding: str, errors: str = "strict") -> bytes: ...
+def encode(decoded: bytes, encoding: str, errors: str = "strict") -> bytes:
+    ...
 
 
 def encode(
@@ -147,15 +152,16 @@ def identity(content):
 def decode_gzip(content: bytes) -> bytes:
     if not content:
         return b""
-    with gzip.GzipFile(fileobj=BytesIO(content)) as f:
-        return f.read()
+    gfile = gzip.GzipFile(fileobj=BytesIO(content))
+    return gfile.read()
 
 
 def encode_gzip(content: bytes) -> bytes:
     s = BytesIO()
     # set mtime to 0 so that gzip encoding is deterministic.
-    with gzip.GzipFile(fileobj=s, mode="wb", mtime=0) as f:
-        f.write(content)
+    gf = gzip.GzipFile(fileobj=s, mode="wb", mtime=0)
+    gf.write(content)
+    gf.close()
     return s.getvalue()
 
 
@@ -173,7 +179,12 @@ def decode_zstd(content: bytes) -> bytes:
     if not content:
         return b""
     zstd_ctx = zstd.ZstdDecompressor()
-    return zstd_ctx.stream_reader(BytesIO(content), read_across_frames=True).read()
+    try:
+        return zstd_ctx.decompress(content)
+    except zstd.ZstdError:
+        # If the zstd stream is streamed without a size header,
+        # try decoding with a 10MiB output buffer
+        return zstd_ctx.decompress(content, max_output_size=10 * 2**20)
 
 
 def encode_zstd(content: bytes) -> bytes:

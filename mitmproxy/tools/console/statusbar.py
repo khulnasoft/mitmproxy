@@ -332,7 +332,7 @@ class StatusBar(urwid.WidgetWrap):
         else:
             boundaddr = ""
         t.extend(self.get_status())
-        status = urwid.AttrMap(
+        status = urwid.AttrWrap(
             urwid.Columns(
                 [
                     urwid.Text(t),

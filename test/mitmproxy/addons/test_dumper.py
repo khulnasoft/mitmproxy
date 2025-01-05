@@ -97,27 +97,12 @@ def test_simple():
 def test_echo_body():
     f = tflow.tflow(resp=True)
     f.response.headers["content-type"] = "text/html"
-    f.response.content = b"foo bar voing\n" * 600
+    f.response.content = b"foo bar voing\n" * 100
 
     sio = io.StringIO()
     d = dumper.Dumper(sio)
     with taddons.context(d) as ctx:
         ctx.configure(d, flow_detail=3)
-        d._echo_message(f.response, f)
-        t = sio.getvalue()
-        assert "cut off" in t
-
-
-def test_echo_body_custom_cutoff():
-    f = tflow.tflow(resp=True)
-    f.response.headers["content-type"] = "text/html"
-    f.response.content = b"foo bar voing\n" * 4
-
-    sio = io.StringIO()
-    d = dumper.Dumper(sio)
-    with taddons.context(d) as ctx:
-        ctx.configure(d, flow_detail=3)
-        ctx.configure(d, content_view_lines_cutoff=3)
         d._echo_message(f.response, f)
         t = sio.getvalue()
         assert "cut off" in t
@@ -133,7 +118,7 @@ def test_echo_trailer():
         f.request.headers["content-type"] = "text/html"
         f.request.headers["transfer-encoding"] = "chunked"
         f.request.headers["trailer"] = "my-little-request-trailer"
-        f.request.content = b"some request content\n" * 600
+        f.request.content = b"some request content\n" * 100
         f.request.trailers = Headers(
             [(b"my-little-request-trailer", b"foobar-request-trailer")]
         )
@@ -306,7 +291,7 @@ def test_quic():
     d = dumper.Dumper(sio)
     with taddons.context(d):
         f = tflow.ttcpflow()
-        f.client_conn.tls_version = "QUICv1"
+        f.client_conn.tls_version = "QUIC"
         # TODO: This should not be metadata, this should be typed attributes.
         f.metadata["quic_stream_id_client"] = 1
         f.metadata["quic_stream_id_server"] = 1
@@ -314,7 +299,7 @@ def test_quic():
         assert "quic stream 1" in sio.getvalue()
 
         f2 = tflow.tudpflow()
-        f2.client_conn.tls_version = "QUICv1"
+        f2.client_conn.tls_version = "QUIC"
         # TODO: This should not be metadata, this should be typed attributes.
         f2.metadata["quic_stream_id_client"] = 1
         f2.metadata["quic_stream_id_server"] = 1

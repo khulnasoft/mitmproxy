@@ -5,7 +5,6 @@ This example shows how one can add a custom contentview to mitmproxy,
 which is used to pretty-print HTTP bodies for example.
 The content view API is explained in the mitmproxy.contentviews module.
 """
-
 from mitmproxy import contentviews
 from mitmproxy import flow
 from mitmproxy import http

@@ -1,4 +1,4 @@
-import { createSlice } from "@reduxjs/toolkit";
+export const TOGGLE_VISIBILITY = "COMMANDBAR_TOGGLE_VISIBILITY";
 
 interface CommandBarState {
     visible: boolean;
@@ -8,16 +8,19 @@ export const defaultState: CommandBarState = {
     visible: false,
 };
 
-export const commandBarSlice = createSlice({
-    name: "commandBar",
-    initialState: defaultState,
-    reducers: {
-        toggleVisibility(state) {
-            state.visible = !state.visible;
-        },
-    },
-});
+export default function reducer(state = defaultState, action): CommandBarState {
+    switch (action.type) {
+        case TOGGLE_VISIBILITY:
+            return {
+                ...state,
+                visible: !state.visible,
+            };
 
-const { actions, reducer } = commandBarSlice;
-export const { toggleVisibility } = actions;
-export default reducer;
+        default:
+            return state;
+    }
+}
+
+export function toggleVisibility() {
+    return { type: TOGGLE_VISIBILITY };
+}

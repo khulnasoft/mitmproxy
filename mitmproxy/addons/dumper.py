@@ -18,7 +18,6 @@ from mitmproxy import flowfilter
 from mitmproxy import http
 from mitmproxy.contrib import click as miniclick
 from mitmproxy.net.dns import response_codes
-from mitmproxy.options import CONTENT_VIEW_LINES_CUTOFF
 from mitmproxy.tcp import TCPFlow
 from mitmproxy.tcp import TCPMessage
 from mitmproxy.udp import UDPFlow
@@ -55,12 +54,12 @@ class Dumper:
             "flow_detail",
             int,
             1,
-            f"""
+            """
             The display detail level for flows in mitmdump: 0 (quiet) to 4 (very verbose).
               0: no output
               1: shortened request URL with response status code
               2: full request URL with response status code and HTTP headers
-              3: 2 + truncated response content, content of WebSocket and TCP messages (content_view_lines_cutoff: {CONTENT_VIEW_LINES_CUTOFF})
+              3: 2 + truncated response content, content of WebSocket and TCP messages
               4: 3 + nothing is truncated
             """,
         )
@@ -126,9 +125,7 @@ class Dumper:
             logging.debug(error)
 
         if ctx.options.flow_detail == 3:
-            lines_to_echo = itertools.islice(
-                lines, ctx.options.content_view_lines_cutoff
-            )
+            lines_to_echo = itertools.islice(lines, 70)
         else:
             lines_to_echo = lines
 
@@ -347,7 +344,7 @@ class Dumper:
         if self.match(f):
             message = f.messages[-1]
             direction = "->" if message.from_client else "<-"
-            if f.client_conn.tls_version == "QUICv1":
+            if f.client_conn.tls_version == "QUIC":
                 if f.type == "tcp":
                     quic_type = "stream"
                 else:

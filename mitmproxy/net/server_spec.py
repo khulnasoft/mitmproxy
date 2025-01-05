@@ -1,7 +1,6 @@
 """
 Server specs are used to describe an upstream proxy or server.
 """
-
 import re
 from functools import cache
 from typing import Literal

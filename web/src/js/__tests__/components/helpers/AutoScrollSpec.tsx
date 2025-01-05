@@ -1,56 +1,47 @@
 import * as React from "react";
-import * as autoscroll from "../../../components/helpers/AutoScroll";
-import { fireEvent, render } from "../../test-utils";
+import ReactDOM from "react-dom";
+import AutoScroll from "../../../components/helpers/AutoScroll";
+import { calcVScroll } from "../../../components/helpers/VirtualScroll";
+import TestUtils from "react-dom/test-utils";
 
 describe("Autoscroll", () => {
-    interface TComponentProps {
-        height: number;
-    }
-
-    class TComponent extends React.Component<TComponentProps> {
-        private viewport = React.createRef<HTMLDivElement>();
-
-        getSnapshotBeforeUpdate(prevProps) {
-            this.fixupJsDom(prevProps.height);
-            return autoscroll.isAtBottom(this.viewport);
+    let mockFn = jest.fn();
+    class tComponent extends React.Component {
+        constructor(props, context) {
+            super(props, context);
+            this.state = { vScroll: calcVScroll() };
         }
 
-        componentDidUpdate(prevProps, prevState, snapshot) {
-            this.fixupJsDom(this.props.height);
-            if (snapshot) {
-                autoscroll.adjustScrollTop(this.viewport);
-            }
+        UNSAFE_componentWillUpdate() {
+            mockFn("foo");
         }
 
-        fixupJsDom(scrollHeight: number) {
-            // work around jsdom limitations
-            Object.defineProperty(this.viewport.current!, "clientHeight", {
-                value: 100,
-                writable: true,
-            });
-            Object.defineProperty(this.viewport.current!, "scrollHeight", {
-                value: scrollHeight,
-                writable: true,
-            });
+        componentDidUpdate() {
+            mockFn("bar");
         }
 
         render() {
-            return <div ref={this.viewport} />;
+            return <p>foo</p>;
         }
     }
 
     it("should update component", () => {
-        const { rerender, container } = render(<TComponent height={120} />);
-        const viewport = container.firstElementChild!;
+        let Foo = AutoScroll(tComponent),
+            autoScroll = TestUtils.renderIntoDocument(<Foo></Foo>),
+            viewport = ReactDOM.findDOMNode(autoScroll);
+        viewport.scrollTop = 10;
+        Object.defineProperty(viewport, "scrollHeight", {
+            value: 10,
+            writable: true,
+        });
+        autoScroll.UNSAFE_componentWillUpdate();
+        expect(mockFn).toBeCalledWith("foo");
 
-        fireEvent.scroll(viewport, { target: { scrollTop: 10 } });
-        rerender(<TComponent height={140} />);
-
-        expect(viewport.scrollTop).toBe(10);
-
-        fireEvent.scroll(viewport, { target: { scrollTop: 40 } });
-        rerender(<TComponent height={160} />);
-
-        expect(viewport.scrollTop).toBeGreaterThanOrEqual(60);
+        Object.defineProperty(viewport, "scrollHeight", {
+            value: 0,
+            writable: true,
+        });
+        autoScroll.componentDidUpdate();
+        expect(mockFn).toBeCalledWith("bar");
     });
 });

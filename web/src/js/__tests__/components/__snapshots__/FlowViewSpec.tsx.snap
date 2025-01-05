@@ -8,14 +8,6 @@ exports[`FlowView 1`] = `
     <nav
       class="nav-tabs nav-tabs-sm"
     >
-      <button
-        class="close-button"
-        data-testid="close-button-id"
-      >
-        <i
-          class="fa fa-times-circle"
-        />
-      </button>
       <a
         class="active"
         href="#"
@@ -51,12 +43,6 @@ exports[`FlowView 1`] = `
         href="#"
       >
         Timing
-      </a>
-      <a
-        class=""
-        href="#"
-      >
-        Comment
       </a>
     </nav>
     <section
@@ -200,14 +186,6 @@ exports[`FlowView 2`] = `
     <nav
       class="nav-tabs nav-tabs-sm"
     >
-      <button
-        class="close-button"
-        data-testid="close-button-id"
-      >
-        <i
-          class="fa fa-times-circle"
-        />
-      </button>
       <a
         class=""
         href="#"
@@ -243,12 +221,6 @@ exports[`FlowView 2`] = `
         href="#"
       >
         Timing
-      </a>
-      <a
-        class=""
-        href="#"
-      >
-        Comment
       </a>
     </nav>
     <section
@@ -390,14 +362,6 @@ exports[`FlowView 3`] = `
     <nav
       class="nav-tabs nav-tabs-sm"
     >
-      <button
-        class="close-button"
-        data-testid="close-button-id"
-      >
-        <i
-          class="fa fa-times-circle"
-        />
-      </button>
       <a
         class=""
         href="#"
@@ -433,12 +397,6 @@ exports[`FlowView 3`] = `
         href="#"
       >
         Timing
-      </a>
-      <a
-        class=""
-        href="#"
-      >
-        Comment
       </a>
     </nav>
     <section
@@ -500,14 +458,6 @@ exports[`FlowView 4`] = `
     <nav
       class="nav-tabs nav-tabs-sm"
     >
-      <button
-        class="close-button"
-        data-testid="close-button-id"
-      >
-        <i
-          class="fa fa-times-circle"
-        />
-      </button>
       <a
         class=""
         href="#"
@@ -543,12 +493,6 @@ exports[`FlowView 4`] = `
         href="#"
       >
         Timing
-      </a>
-      <a
-        class=""
-        href="#"
-      >
-        Comment
       </a>
     </nav>
     <section
@@ -795,14 +739,6 @@ exports[`FlowView 5`] = `
     <nav
       class="nav-tabs nav-tabs-sm"
     >
-      <button
-        class="close-button"
-        data-testid="close-button-id"
-      >
-        <i
-          class="fa fa-times-circle"
-        />
-      </button>
       <a
         class=""
         href="#"
@@ -838,12 +774,6 @@ exports[`FlowView 5`] = `
         href="#"
       >
         Timing
-      </a>
-      <a
-        class=""
-        href="#"
-      >
-        Comment
       </a>
     </nav>
     <section
@@ -1009,91 +939,6 @@ exports[`FlowView 6`] = `
     <nav
       class="nav-tabs nav-tabs-sm"
     >
-      <button
-        class="close-button"
-        data-testid="close-button-id"
-      >
-        <i
-          class="fa fa-times-circle"
-        />
-      </button>
-      <a
-        class=""
-        href="#"
-      >
-        Request
-      </a>
-      <a
-        class=""
-        href="#"
-      >
-        Response
-      </a>
-      <a
-        class=""
-        href="#"
-      >
-        WebSocket
-      </a>
-      <a
-        class=""
-        href="#"
-      >
-        Error
-      </a>
-      <a
-        class=""
-        href="#"
-      >
-        Connection
-      </a>
-      <a
-        class=""
-        href="#"
-      >
-        Timing
-      </a>
-      <a
-        class="active"
-        href="#"
-      >
-        Comment
-      </a>
-    </nav>
-    <section
-      class="timing"
-    >
-      <h4>
-        Comment
-      </h4>
-      <span
-        class="inline-input kv-value"
-        placeholder="empty"
-        tabindex="0"
-      >
-        I'm a comment!
-      </span>
-    </section>
-  </div>
-</DocumentFragment>
-`;
-
-exports[`FlowView 7`] = `
-<DocumentFragment>
-  <div
-    class="flow-detail"
-  >
-    <nav
-      class="nav-tabs nav-tabs-sm"
-    >
-      <button
-        class="close-button"
-        data-testid="close-button-id"
-      >
-        <i
-          class="fa fa-times-circle"
-        />
-      </button>
       <a
         class=""
         href="#"
@@ -1129,12 +974,6 @@ exports[`FlowView 7`] = `
         href="#"
       >
         Timing
-      </a>
-      <a
-        class=""
-        href="#"
-      >
-        Comment
       </a>
     </nav>
     <section
@@ -1155,7 +994,7 @@ exports[`FlowView 7`] = `
 </DocumentFragment>
 `;
 
-exports[`FlowView 8`] = `
+exports[`FlowView 7`] = `
 <DocumentFragment>
   <div
     class="flow-detail"
@@ -1163,14 +1002,6 @@ exports[`FlowView 8`] = `
     <nav
       class="nav-tabs nav-tabs-sm"
     >
-      <button
-        class="close-button"
-        data-testid="close-button-id"
-      >
-        <i
-          class="fa fa-times-circle"
-        />
-      </button>
       <a
         class="active"
         href="#"
@@ -1194,12 +1025,6 @@ exports[`FlowView 8`] = `
         href="#"
       >
         Timing
-      </a>
-      <a
-        class=""
-        href="#"
-      >
-        Comment
       </a>
     </nav>
     <section
@@ -1239,7 +1064,7 @@ exports[`FlowView 8`] = `
 </DocumentFragment>
 `;
 
-exports[`FlowView 9`] = `
+exports[`FlowView 8`] = `
 <DocumentFragment>
   <div
     class="flow-detail"
@@ -1247,14 +1072,6 @@ exports[`FlowView 9`] = `
     <nav
       class="nav-tabs nav-tabs-sm"
     >
-      <button
-        class="close-button"
-        data-testid="close-button-id"
-      >
-        <i
-          class="fa fa-times-circle"
-        />
-      </button>
       <a
         class=""
         href="#"
@@ -1279,12 +1096,6 @@ exports[`FlowView 9`] = `
       >
         Timing
       </a>
-      <a
-        class=""
-        href="#"
-      >
-        Comment
-      </a>
     </nav>
     <section
       class="error"
@@ -1304,7 +1115,7 @@ exports[`FlowView 9`] = `
 </DocumentFragment>
 `;
 
-exports[`FlowView 10`] = `
+exports[`FlowView 9`] = `
 <DocumentFragment>
   <div
     class="flow-detail"
@@ -1312,14 +1123,6 @@ exports[`FlowView 10`] = `
     <nav
       class="nav-tabs nav-tabs-sm"
     >
-      <button
-        class="close-button"
-        data-testid="close-button-id"
-      >
-        <i
-          class="fa fa-times-circle"
-        />
-      </button>
       <a
         class="active"
         href="#"
@@ -1349,12 +1152,6 @@ exports[`FlowView 10`] = `
         href="#"
       >
         Timing
-      </a>
-      <a
-        class=""
-        href="#"
-      >
-        Comment
       </a>
     </nav>
     <section
@@ -1418,7 +1215,7 @@ exports[`FlowView 10`] = `
 </DocumentFragment>
 `;
 
-exports[`FlowView 11`] = `
+exports[`FlowView 10`] = `
 <DocumentFragment>
   <div
     class="flow-detail"
@@ -1426,14 +1223,6 @@ exports[`FlowView 11`] = `
     <nav
       class="nav-tabs nav-tabs-sm"
     >
-      <button
-        class="close-button"
-        data-testid="close-button-id"
-      >
-        <i
-          class="fa fa-times-circle"
-        />
-      </button>
       <a
         class=""
         href="#"
@@ -1463,12 +1252,6 @@ exports[`FlowView 11`] = `
         href="#"
       >
         Timing
-      </a>
-      <a
-        class=""
-        href="#"
-      >
-        Comment
       </a>
     </nav>
     <section
@@ -1588,7 +1371,7 @@ exports[`FlowView 11`] = `
 </DocumentFragment>
 `;
 
-exports[`FlowView 12`] = `
+exports[`FlowView 11`] = `
 <DocumentFragment>
   <div
     class="flow-detail"
@@ -1596,14 +1379,6 @@ exports[`FlowView 12`] = `
     <nav
       class="nav-tabs nav-tabs-sm"
     >
-      <button
-        class="close-button"
-        data-testid="close-button-id"
-      >
-        <i
-          class="fa fa-times-circle"
-        />
-      </button>
       <a
         class=""
         href="#"
@@ -1634,12 +1409,6 @@ exports[`FlowView 12`] = `
       >
         Timing
       </a>
-      <a
-        class=""
-        href="#"
-      >
-        Comment
-      </a>
     </nav>
     <section
       class="error"
@@ -1659,7 +1428,7 @@ exports[`FlowView 12`] = `
 </DocumentFragment>
 `;
 
-exports[`FlowView 13`] = `
+exports[`FlowView 12`] = `
 <DocumentFragment>
   <div
     class="flow-detail"
@@ -1667,14 +1436,6 @@ exports[`FlowView 13`] = `
     <nav
       class="nav-tabs nav-tabs-sm"
     >
-      <button
-        class="close-button"
-        data-testid="close-button-id"
-      >
-        <i
-          class="fa fa-times-circle"
-        />
-      </button>
       <a
         class="active"
         href="#"
@@ -1698,12 +1459,6 @@ exports[`FlowView 13`] = `
         href="#"
       >
         Timing
-      </a>
-      <a
-        class=""
-        href="#"
-      >
-        Comment
       </a>
     </nav>
     <section
@@ -1743,7 +1498,7 @@ exports[`FlowView 13`] = `
 </DocumentFragment>
 `;
 
-exports[`FlowView 14`] = `
+exports[`FlowView 13`] = `
 <DocumentFragment>
   <div
     class="flow-detail"
@@ -1751,14 +1506,6 @@ exports[`FlowView 14`] = `
     <nav
       class="nav-tabs nav-tabs-sm"
     >
-      <button
-        class="close-button"
-        data-testid="close-button-id"
-      >
-        <i
-          class="fa fa-times-circle"
-        />
-      </button>
       <a
         class=""
         href="#"
@@ -1782,12 +1529,6 @@ exports[`FlowView 14`] = `
         href="#"
       >
         Timing
-      </a>
-      <a
-        class=""
-        href="#"
-      >
-        Comment
       </a>
     </nav>
     <section

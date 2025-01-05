@@ -54,21 +54,13 @@ class TestReadFile:
 
             tf = tmpdir.join("tfile")
 
-            load_called = asyncio.Event()
-
-            async def load_flow(*_, **__):
-                load_called.set()
-
-            tctx.master.load_flow = load_flow
-
-            tf.write(data.getvalue())
-            tctx.configure(rf, rfile=str(tf), readfile_filter=".*")
-            assert not load_called.is_set()
-            rf.running()
-            await load_called.wait()
-
-            while rf.reading():
+            with mock.patch("mitmproxy.master.Master.load_flow") as mck:
+                tf.write(data.getvalue())
+                tctx.configure(rf, rfile=str(tf), readfile_filter=".*")
+                mck.assert_not_awaited()
+                rf.running()
                 await asyncio.sleep(0)
+                mck.assert_awaited()
 
             tf.write(corrupt_data.getvalue())
             tctx.configure(rf, rfile=str(tf))

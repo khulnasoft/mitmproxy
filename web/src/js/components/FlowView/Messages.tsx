@@ -18,18 +18,18 @@ export default function Messages({ flow, messages_meta }: MessagesPropTypes) {
     const dispatch = useAppDispatch();
 
     const contentView = useAppSelector(
-        (state) => state.ui.flow.contentViewFor[flow.id + "messages"] || "Auto",
+        (state) => state.ui.flow.contentViewFor[flow.id + "messages"] || "Auto"
     );
-    const [maxLines, setMaxLines] = useState<number>(
-        useAppSelector((state) => state.options.content_view_lines_cutoff),
+    let [maxLines, setMaxLines] = useState<number>(
+        useAppSelector((state) => state.options.content_view_lines_cutoff)
     );
     const showMore = useCallback(
         () => setMaxLines(Math.max(1024, maxLines * 2)),
-        [maxLines],
+        [maxLines]
     );
     const content = useContent(
         MessageUtils.getContentURL(flow, "messages", contentView, maxLines + 1),
-        flow.id + messages_meta.count,
+        flow.id + messages_meta.count
     );
     const messages =
         useMemo<ContentViewData[] | undefined>(() => {
@@ -48,8 +48,6 @@ export default function Messages({ flow, messages_meta }: MessagesPropTypes) {
             }
         }, [content]) || [];
 
-    let remainingLines = maxLines;
-
     return (
         <div className="contentview">
             <div className="controls">
@@ -57,12 +55,7 @@ export default function Messages({ flow, messages_meta }: MessagesPropTypes) {
                 <ViewSelector
                     value={contentView}
                     onChange={(cv) =>
-                        dispatch(
-                            setContentViewFor({
-                                messageId: flow.id + "messages",
-                                contentView: cv,
-                            }),
-                        )
+                        dispatch(setContentViewFor(flow.id + "messages", cv))
                     }
                 />
             </div>
@@ -80,12 +73,12 @@ export default function Messages({ flow, messages_meta }: MessagesPropTypes) {
                         </small>
                         <LineRenderer
                             lines={d.lines}
-                            maxLines={remainingLines}
+                            maxLines={maxLines}
                             showMore={showMore}
                         />
                     </div>
                 );
-                remainingLines -= d.lines.length;
+                maxLines -= d.lines.length;
                 return renderer;
             })}
         </div>

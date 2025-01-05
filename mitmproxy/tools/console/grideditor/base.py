@@ -21,11 +21,13 @@ from mitmproxy.utils import strutils
 
 
 @overload
-def read_file(filename: str, escaped: Literal[True]) -> bytes: ...
+def read_file(filename: str, escaped: Literal[True]) -> bytes:
+    ...
 
 
 @overload
-def read_file(filename: str, escaped: Literal[False]) -> str: ...
+def read_file(filename: str, escaped: Literal[False]) -> str:
+    ...
 
 
 def read_file(filename: str, escaped: bool) -> bytes | str:
@@ -99,11 +101,11 @@ class GridRow(urwid.WidgetWrap):
                 w = self.editor.columns[i].Display(v)
                 if focused == i:
                     if i in errors:
-                        w = urwid.AttrMap(w, "focusfield_error")
+                        w = urwid.AttrWrap(w, "focusfield_error")
                     else:
-                        w = urwid.AttrMap(w, "focusfield")
+                        w = urwid.AttrWrap(w, "focusfield")
                 elif i in errors:
-                    w = urwid.AttrMap(w, "field_error")
+                    w = urwid.AttrWrap(w, "field_error")
                 self.fields.append(w)
 
         fspecs = self.fields[:]
@@ -111,7 +113,7 @@ class GridRow(urwid.WidgetWrap):
             fspecs[0] = ("fixed", self.editor.first_width + 2, fspecs[0])
         w = urwid.Columns(fspecs, dividechars=2)
         if focused is not None:
-            w.focus_position = focused
+            w.set_focus_column(focused)
         super().__init__(w)
 
     def keypress(self, s, k):
@@ -295,7 +297,7 @@ class BaseGridEditor(urwid.WidgetWrap):
                 else:
                     headings.append(c)
             h = urwid.Columns(headings, dividechars=2)
-            h = urwid.AttrMap(h, "heading")
+            h = urwid.AttrWrap(h, "heading")
 
         self.walker = GridWalker(self.value, self)
         self.lb = GridListBox(self.walker)
@@ -313,14 +315,16 @@ class BaseGridEditor(urwid.WidgetWrap):
 
     def show_empty_msg(self):
         if self.walker.lst:
-            self._w.footer = None
+            self._w.set_footer(None)
         else:
-            self._w.footer = urwid.Text(
-                [
-                    ("highlight", "No values - you should add some. Press "),
-                    ("key", "?"),
-                    ("highlight", " for help."),
-                ]
+            self._w.set_footer(
+                urwid.Text(
+                    [
+                        ("highlight", "No values - you should add some. Press "),
+                        ("key", "?"),
+                        ("highlight", " for help."),
+                    ]
+                )
             )
 
     def set_subeditor_value(self, val, focus, focus_col):
@@ -373,8 +377,6 @@ class BaseGridEditor(urwid.WidgetWrap):
         return None
 
     def handle_key(self, key):
-        if key == "?":
-            signals.pop_view_state.send()
         return False
 
     def cmd_add(self):

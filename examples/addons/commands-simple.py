@@ -1,5 +1,4 @@
 """Add a custom command to mitmproxy's command prompt."""
-
 import logging
 
 from mitmproxy import command

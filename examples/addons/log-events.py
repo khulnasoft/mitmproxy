@@ -1,5 +1,4 @@
 """Post messages to mitmproxy's event log."""
-
 import logging
 
 from mitmproxy.addonmanager import Loader

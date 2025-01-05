@@ -22,21 +22,20 @@ def test_parse_spec_err(filter, err):
 
 class TestBlockList:
     @pytest.mark.parametrize(
-        "filter,request_url,status_code",
+        "filter,status_code",
         [
-            (":~u example.org:404", b"https://example.org/images/test.jpg", 404),
-            (":~u example.com:404", b"https://example.org/images/test.jpg", None),
-            (":~u test:404", b"https://example.org/images/TEST.jpg", 404),
-            ("/!jpg/418", b"https://example.org/images/test.jpg", None),
-            ("/!png/418", b"https://example.org/images/test.jpg", 418),
+            (":~u example.org:404", 404),
+            (":~u example.com:404", None),
+            ("/!jpg/418", None),
+            ("/!png/418", 418),
         ],
     )
-    def test_block(self, filter, request_url, status_code):
+    def test_block(self, filter, status_code):
         bl = blocklist.BlockList()
         with taddons.context(bl) as tctx:
             tctx.configure(bl, block_list=[filter])
             f = tflow.tflow()
-            f.request.url = request_url
+            f.request.url = b"https://example.org/images/test.jpg"
             bl.request(f)
             if status_code is not None:
                 assert f.response.status_code == status_code

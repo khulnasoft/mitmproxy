@@ -9,7 +9,6 @@ References:
     - https://docs.microsoft.com/en-us/windows/uwp/monetize/python-code-examples-for-the-windows-store-submission-api
     - https://docs.microsoft.com/en-us/windows/uwp/monetize/python-code-examples-for-submissions-game-options-and-trailers
 """
-
 import http.client
 import json
 import os

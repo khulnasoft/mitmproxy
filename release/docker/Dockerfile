@@ -1,17 +1,15 @@
-FROM python:3.13-bookworm AS wheelbuilder
+FROM python:3.11-bullseye as wheelbuilder
 
-COPY mitmproxy-*-py3-none-any.whl /wheels/
-RUN pip install wheel && pip wheel --wheel-dir /wheels /wheels/*.whl
+ARG MITMPROXY_WHEEL
+COPY $MITMPROXY_WHEEL /wheels/
+RUN pip install wheel && pip wheel --wheel-dir /wheels /wheels/${MITMPROXY_WHEEL}
 
-FROM python:3.13-slim-bookworm
+FROM python:3.11-slim-bullseye
 
 RUN useradd -mU mitmproxy
 RUN apt-get update \
     && apt-get install -y --no-install-recommends gosu nano \
     && rm -rf /var/lib/apt/lists/*
-
-RUN mkdir /home/mitmproxy/.mitmproxy \
-    && chown mitmproxy:mitmproxy /home/mitmproxy/.mitmproxy
 
 COPY --from=wheelbuilder /wheels /wheels
 RUN pip install --no-index --find-links=/wheels mitmproxy

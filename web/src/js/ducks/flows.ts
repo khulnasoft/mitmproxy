@@ -1,9 +1,8 @@
 import { fetchApi } from "../utils";
-
 import * as store from "./utils/store";
 import Filt from "../filt/filt";
 import { Flow } from "../flow";
-import { sortFunctions } from "../flow/utils";
+import FlowColumns from "../components/FlowTable/FlowColumns";
 
 export const ADD = "FLOWS_ADD";
 export const UPDATE = "FLOWS_UPDATE";
@@ -21,7 +20,7 @@ interface FlowFilterFn extends store.FilterFn<Flow> {}
 export interface FlowsState extends store.State<Flow> {
     highlight?: string;
     filter?: string;
-    sort: { column?: keyof typeof sortFunctions; desc: boolean };
+    sort: { column?: keyof typeof FlowColumns; desc: boolean };
     selected: string[];
 }
 
@@ -35,17 +34,17 @@ export const defaultState: FlowsState = {
 
 export default function reducer(
     state: FlowsState = defaultState,
-    action,
+    action
 ): FlowsState {
     switch (action.type) {
         case ADD:
         case UPDATE:
         case REMOVE:
-        case RECEIVE: {
-            const storeAction = store[action.cmd](
+        case RECEIVE:
+            let storeAction = store[action.cmd](
                 action.data,
                 makeFilter(state.filter),
-                makeSort(state.sort),
+                makeSort(state.sort)
             );
 
             let selected = state.selected;
@@ -61,8 +60,8 @@ export default function reducer(
                         action.data in state.viewIndex &&
                         state.view.length > 1
                     ) {
-                        const currentIndex = state.viewIndex[action.data];
-                        let nextSelection;
+                        let currentIndex = state.viewIndex[action.data],
+                            nextSelection;
                         if (currentIndex === state.view.length - 1) {
                             // last row
                             nextSelection = state.view[currentIndex - 1];
@@ -79,7 +78,7 @@ export default function reducer(
                 selected,
                 ...store.reduce(state, storeAction),
             };
-        }
+
         case SET_FILTER:
             return {
                 ...state,
@@ -88,8 +87,8 @@ export default function reducer(
                     state,
                     store.setFilter(
                         makeFilter(action.filter),
-                        makeSort(state.sort),
-                    ),
+                        makeSort(state.sort)
+                    )
                 ),
             };
 
@@ -128,21 +127,19 @@ export function makeSort({
     column,
     desc,
 }: {
-    column?: keyof typeof sortFunctions;
+    column?: keyof typeof FlowColumns;
     desc: boolean;
 }): FlowSortFn {
     if (!column) {
-        return (_a, _b) => 0;
+        return (a, b) => 0;
     }
-    const sortKeyFun = sortFunctions[column];
+    const sortKeyFun = FlowColumns[column].sortKey;
     return (a, b) => {
         const ka = sortKeyFun(a);
         const kb = sortKeyFun(b);
-        // @ts-expect-error undefined is fine
         if (ka > kb) {
             return desc ? -1 : 1;
         }
-        // @ts-expect-error undefined is fine
         if (ka < kb) {
             return desc ? 1 : -1;
         }
@@ -163,9 +160,9 @@ export function setSort(column: string, desc: boolean) {
 }
 
 export function selectRelative(flows, shift) {
-    const currentSelectionIndex = flows.viewIndex[flows.selected[0]];
-    const minIndex = 0;
-    const maxIndex = flows.view.length - 1;
+    let currentSelectionIndex = flows.viewIndex[flows.selected[0]];
+    let minIndex = 0;
+    let maxIndex = flows.view.length - 1;
     let newIndex;
     if (currentSelectionIndex === undefined) {
         newIndex = shift < 0 ? minIndex : maxIndex;
@@ -174,51 +171,55 @@ export function selectRelative(flows, shift) {
         newIndex = window.Math.max(newIndex, minIndex);
         newIndex = window.Math.min(newIndex, maxIndex);
     }
-    const flow = flows.view[newIndex];
+    let flow = flows.view[newIndex];
     return select(flow ? flow.id : undefined);
 }
 
 export function resume(flow: Flow) {
-    return () => fetchApi(`/flows/${flow.id}/resume`, { method: "POST" });
+    return (dispatch) =>
+        fetchApi(`/flows/${flow.id}/resume`, { method: "POST" });
 }
 
 export function resumeAll() {
-    return () => fetchApi("/flows/resume", { method: "POST" });
+    return (dispatch) => fetchApi("/flows/resume", { method: "POST" });
 }
 
 export function kill(flow: Flow) {
-    return () => fetchApi(`/flows/${flow.id}/kill`, { method: "POST" });
+    return (dispatch) => fetchApi(`/flows/${flow.id}/kill`, { method: "POST" });
 }
 
 export function killAll() {
-    return () => fetchApi("/flows/kill", { method: "POST" });
+    return (dispatch) => fetchApi("/flows/kill", { method: "POST" });
 }
 
 export function remove(flow: Flow) {
-    return () => fetchApi(`/flows/${flow.id}`, { method: "DELETE" });
+    return (dispatch) => fetchApi(`/flows/${flow.id}`, { method: "DELETE" });
 }
 
 export function duplicate(flow: Flow) {
-    return () => fetchApi(`/flows/${flow.id}/duplicate`, { method: "POST" });
+    return (dispatch) =>
+        fetchApi(`/flows/${flow.id}/duplicate`, { method: "POST" });
 }
 
 export function replay(flow: Flow) {
-    return () => fetchApi(`/flows/${flow.id}/replay`, { method: "POST" });
+    return (dispatch) =>
+        fetchApi(`/flows/${flow.id}/replay`, { method: "POST" });
 }
 
 export function revert(flow: Flow) {
-    return () => fetchApi(`/flows/${flow.id}/revert`, { method: "POST" });
+    return (dispatch) =>
+        fetchApi(`/flows/${flow.id}/revert`, { method: "POST" });
 }
 
 export function update(flow: Flow, data) {
-    return () => fetchApi.put(`/flows/${flow.id}`, data);
+    return (dispatch) => fetchApi.put(`/flows/${flow.id}`, data);
 }
 
 export function uploadContent(flow: Flow, file, type) {
     const body = new FormData();
     file = new window.Blob([file], { type: "plain/text" });
     body.append("file", file);
-    return () =>
+    return (dispatch) =>
         fetchApi(`/flows/${flow.id}/${type}/content.data`, {
             method: "POST",
             body,
@@ -226,13 +227,13 @@ export function uploadContent(flow: Flow, file, type) {
 }
 
 export function clear() {
-    return () => fetchApi("/clear", { method: "POST" });
+    return (dispatch) => fetchApi("/clear", { method: "POST" });
 }
 
 export function upload(file) {
     const body = new FormData();
     body.append("file", file);
-    return () => fetchApi("/flows/dump", { method: "POST", body });
+    return (dispatch) => fetchApi("/flows/dump", { method: "POST", body });
 }
 
 export function select(id?: string) {

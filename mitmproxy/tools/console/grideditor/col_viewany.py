@@ -1,7 +1,6 @@
 """
 A display-only column that displays any data type.
 """
-
 from typing import Any
 
 import urwid

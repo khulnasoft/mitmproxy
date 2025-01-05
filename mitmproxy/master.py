@@ -4,7 +4,6 @@ import logging
 from . import ctx as mitmproxy_ctx
 from .addons import termlog
 from .proxy.mode_specs import ReverseMode
-from .utils import asyncio_utils
 from mitmproxy import addonmanager
 from mitmproxy import command
 from mitmproxy import eventsequence
@@ -52,13 +51,11 @@ class Master:
         mitmproxy_ctx.options = self.options
 
     async def run(self) -> None:
-        with (
-            asyncio_utils.install_exception_handler(self._asyncio_exception_handler),
-            asyncio_utils.set_eager_task_factory(),
-        ):
+        old_handler = self.event_loop.get_exception_handler()
+        self.event_loop.set_exception_handler(self._asyncio_exception_handler)
+        try:
             self.should_exit.clear()
 
-            # Can we exit before even bringing up servers?
             if ec := self.addons.get("errorcheck"):
                 await ec.shutdown_if_errored()
             if ps := self.addons.get("proxyserver"):
@@ -70,24 +67,17 @@ class Master:
                     ],
                     return_when=asyncio.FIRST_COMPLETED,
                 )
-                if self.should_exit.is_set():
-                    return
-                # Did bringing up servers fail?
-                if ec := self.addons.get("errorcheck"):
-                    await ec.shutdown_if_errored()
-
+            if ec := self.addons.get("errorcheck"):
+                await ec.shutdown_if_errored()
+                ec.finish()
+            await self.running()
             try:
-                await self.running()
-                # Any errors in the final part of startup?
-                if ec := self.addons.get("errorcheck"):
-                    await ec.shutdown_if_errored()
-                    ec.finish()
-
                 await self.should_exit.wait()
             finally:
-                # if running() was called, we also always want to call done().
-                # .wait might be cancelled (e.g. by sys.exit), so  this needs to be in a finally block.
+                # .wait might be cancelled (e.g. by sys.exit)
                 await self.done()
+        finally:
+            self.event_loop.set_exception_handler(old_handler)
 
     def shutdown(self):
         """

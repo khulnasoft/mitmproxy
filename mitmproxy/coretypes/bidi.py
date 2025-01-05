@@ -1,4 +1,5 @@
 class BiDi:
+
     """
     A wee utility class for keeping bi-directional mappings, like field
     constants in protocols. Names are attributes on the object, dict-like

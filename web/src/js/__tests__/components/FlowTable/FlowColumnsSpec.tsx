@@ -14,7 +14,7 @@ test("should render columns", async () => {
                         <Col flow={tflow} />
                     </tr>
                 </tbody>
-            </table>,
+            </table>
         );
         expect(asFragment()).toMatchSnapshot(name);
     });
@@ -27,7 +27,7 @@ describe("Flowcolumns Components", () => {
             tree = iconColumn.toJSON();
         expect(tree).toMatchSnapshot();
 
-        const tflow = { ...TFlow(), websocket: undefined };
+        let tflow = { ...TFlow(), websocket: undefined };
         iconColumn = renderer.create(<FlowColumns.icon flow={tflow} />);
         tree = iconColumn.toJSON();
         // plain
@@ -43,13 +43,13 @@ describe("Flowcolumns Components", () => {
         tree = iconColumn.toJSON();
         expect(tree).toMatchSnapshot();
         // image
-        const imageFlow = { ...TFlow(), websocket: undefined };
+        let imageFlow = { ...TFlow(), websocket: undefined };
         imageFlow.response.headers = [["Content-Type", "image/jpeg"]];
         iconColumn = renderer.create(<FlowColumns.icon flow={imageFlow} />);
         tree = iconColumn.toJSON();
         expect(tree).toMatchSnapshot();
         // javascript
-        const jsFlow = { ...TFlow(), websocket: undefined };
+        let jsFlow = { ...TFlow(), websocket: undefined };
         jsFlow.response.headers = [
             ["Content-Type", "application/x-javascript"],
         ];
@@ -57,27 +57,27 @@ describe("Flowcolumns Components", () => {
         tree = iconColumn.toJSON();
         expect(tree).toMatchSnapshot();
         // css
-        const cssFlow = { ...TFlow(), websocket: undefined };
+        let cssFlow = { ...TFlow(), websocket: undefined };
         cssFlow.response.headers = [["Content-Type", "text/css"]];
         iconColumn = renderer.create(<FlowColumns.icon flow={cssFlow} />);
         tree = iconColumn.toJSON();
         expect(tree).toMatchSnapshot();
         // html
-        const htmlFlow = { ...TFlow(), websocket: undefined };
+        let htmlFlow = { ...TFlow(), websocket: undefined };
         htmlFlow.response.headers = [["Content-Type", "text/html"]];
         iconColumn = renderer.create(<FlowColumns.icon flow={htmlFlow} />);
         tree = iconColumn.toJSON();
         expect(tree).toMatchSnapshot();
         // default
-        const fooFlow = { ...TFlow(), websocket: undefined };
+        let fooFlow = { ...TFlow(), websocket: undefined };
         fooFlow.response.headers = [["Content-Type", "foo"]];
         iconColumn = renderer.create(<FlowColumns.icon flow={fooFlow} />);
         tree = iconColumn.toJSON();
         expect(tree).toMatchSnapshot();
         // no response
-        const noResponseFlow = { ...TFlow(), response: undefined };
+        let noResponseFlow = { ...TFlow(), response: undefined };
         iconColumn = renderer.create(
-            <FlowColumns.icon flow={noResponseFlow} />,
+            <FlowColumns.icon flow={noResponseFlow} />
         );
         tree = iconColumn.toJSON();
         expect(tree).toMatchSnapshot();
@@ -102,20 +102,11 @@ describe("Flowcolumns Components", () => {
             tree = timeColumn.toJSON();
         expect(tree).toMatchSnapshot();
 
-        const noResponseFlow = { ...tflow, response: undefined };
+        let noResponseFlow = { ...tflow, response: undefined };
         timeColumn = renderer.create(
-            <FlowColumns.time flow={noResponseFlow} />,
+            <FlowColumns.time flow={noResponseFlow} />
         );
         tree = timeColumn.toJSON();
-        expect(tree).toMatchSnapshot();
-    });
-
-    it("should render CommentColumn", () => {
-        const tflow = TFlow();
-        const commentColumn = renderer.create(
-            <FlowColumns.comment flow={tflow} />,
-        );
-        const tree = commentColumn.toJSON();
         expect(tree).toMatchSnapshot();
     });
 });

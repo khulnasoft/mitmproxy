@@ -11,7 +11,6 @@ Thus, the View API is very minimalistic. The only arguments are `data` and
 metadata depend on the protocol in use. Known attributes can be found in
 `base.View`.
 """
-
 import traceback
 
 from ..tcp import TCPMessage
@@ -21,7 +20,6 @@ from . import auto
 from . import css
 from . import dns
 from . import graphql
-from . import grpc
 from . import hex
 from . import http3
 from . import image
@@ -30,7 +28,6 @@ from . import json
 from . import mqtt
 from . import msgpack
 from . import multipart
-from . import protobuf
 from . import query
 from . import raw
 from . import urlencoded
@@ -51,7 +48,8 @@ from mitmproxy.utils import strutils
 views: list[View] = []
 
 
-def _update(view: View) -> None: ...
+def _update(view: View) -> None:
+    ...
 
 
 on_add = signals.SyncSignal(_update)
@@ -141,10 +139,6 @@ def get_message_content_view(
     if isinstance(message, UDPMessage):
         udp_message = message
 
-    websocket_message = None
-    if isinstance(message, WebSocketMessage):
-        websocket_message = message
-
     description, lines, error = get_content_view(
         viewmode,
         content,
@@ -153,7 +147,6 @@ def get_message_content_view(
         http_message=http_message,
         tcp_message=tcp_message,
         udp_message=udp_message,
-        websocket_message=websocket_message,
     )
 
     if enc:
@@ -171,7 +164,6 @@ def get_content_view(
     http_message: http.Message | None = None,
     tcp_message: tcp.TCPMessage | None = None,
     udp_message: udp.UDPMessage | None = None,
-    websocket_message: WebSocketMessage | None = None,
 ):
     """
     Args:
@@ -192,7 +184,6 @@ def get_content_view(
             http_message=http_message,
             tcp_message=tcp_message,
             udp_message=udp_message,
-            websocket_message=websocket_message,
         )
         if ret is None:
             ret = (
@@ -204,7 +195,6 @@ def get_content_view(
                     http_message=http_message,
                     tcp_message=tcp_message,
                     udp_message=udp_message,
-                    websocket_message=websocket_message,
                 )[1],
             )
         desc, content = ret
@@ -221,7 +211,6 @@ def get_content_view(
             http_message=http_message,
             tcp_message=tcp_message,
             udp_message=udp_message,
-            websocket_message=websocket_message,
         )[1]
         error = f"{getattr(viewmode, 'name')} content viewer failed: \n{traceback.format_exc()}"
 
@@ -243,9 +232,7 @@ add(urlencoded.ViewURLEncoded())
 add(multipart.ViewMultipart())
 add(image.ViewImage())
 add(query.ViewQuery())
-add(protobuf.ViewProtobuf())
 add(msgpack.ViewMsgPack())
-add(grpc.ViewGrpcProtobuf())
 add(mqtt.ViewMQTT())
 add(http3.ViewHttp3())
 add(dns.ViewDns())

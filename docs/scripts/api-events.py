@@ -97,7 +97,6 @@ with outfile.open("w") as f, contextlib.redirect_stdout(f):
             server_hooks.ServerConnectHook,
             server_hooks.ServerConnectedHook,
             server_hooks.ServerDisconnectedHook,
-            server_hooks.ServerConnectErrorHook,
         ],
     )
 
@@ -112,8 +111,6 @@ with outfile.open("w") as f, contextlib.redirect_stdout(f):
             http.HttpErrorHook,
             http.HttpConnectHook,
             http.HttpConnectUpstreamHook,
-            http.HttpConnectedHook,
-            http.HttpConnectErrorHook,
         ],
     )
 

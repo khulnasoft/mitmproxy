@@ -9,15 +9,15 @@ export type ContentViewData = {
 };
 
 export function useContent(url: string, hash?: string): string | undefined {
-    const [content, setContent] = useState<string>();
-    const [abort, setAbort] = useState<AbortController>();
+    const [content, setContent] = useState<string>(),
+        [abort, setAbort] = useState<AbortController>();
 
     useEffect(() => {
         if (abort) {
             abort.abort();
         }
 
-        const controller = new AbortController();
+        let controller = new AbortController();
         fetchApi(url, { signal: controller.signal })
             .then((response) => {
                 if (!response.ok)

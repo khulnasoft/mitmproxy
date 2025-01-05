@@ -5,13 +5,7 @@ export const RECEIVE = "EVENTS_RECEIVE";
 export const TOGGLE_VISIBILITY = "EVENTS_TOGGLE_VISIBILITY";
 export const TOGGLE_FILTER = "EVENTS_TOGGLE_FILTER";
 
-export enum LogLevel {
-    debug = "debug",
-    info = "info",
-    web = "web",
-    warn = "warn",
-    error = "error",
-}
+type LogLevel = "debug" | "info" | "web" | "warn" | "error";
 
 export interface EventLogItem extends store.Item {
     message: string;
@@ -31,7 +25,7 @@ const defaultState: EventLogState = {
 
 export default function reduce(
     state: EventLogState = defaultState,
-    action,
+    action
 ): EventLogState {
     switch (action.type) {
         case TOGGLE_VISIBILITY:
@@ -40,7 +34,7 @@ export default function reduce(
                 visible: !state.visible,
             };
 
-        case TOGGLE_FILTER: {
+        case TOGGLE_FILTER:
             const filters = {
                 ...state.filters,
                 [action.filter]: !state.filters[action.filter],
@@ -50,10 +44,10 @@ export default function reduce(
                 filters,
                 ...store.reduce(
                     state,
-                    store.setFilter<EventLogItem>((log) => filters[log.level]),
+                    store.setFilter<EventLogItem>((log) => filters[log.level])
                 ),
             };
-        }
+
         case ADD:
         case RECEIVE:
             return {
@@ -62,8 +56,8 @@ export default function reduce(
                     state,
                     store[action.cmd](
                         action.data,
-                        (log: EventLogItem) => state.filters[log.level],
-                    ),
+                        (log) => state.filters[log.level]
+                    )
                 ),
             };
 
@@ -80,8 +74,8 @@ export function toggleVisibility() {
     return { type: TOGGLE_VISIBILITY };
 }
 
-export function add(message: string, level: LogLevel = LogLevel.web) {
-    const data = {
+export function add(message: string, level: LogLevel = "web") {
+    let data = {
         id: Math.random().toString(),
         message,
         level,

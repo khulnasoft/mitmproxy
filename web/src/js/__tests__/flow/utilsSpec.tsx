@@ -5,26 +5,26 @@ import { HTTPFlow } from "../../flow";
 
 describe("MessageUtils", () => {
     it("should be possible to get first header", () => {
-        const tflow = TFlow();
+        let tflow = TFlow();
         expect(
-            utils.MessageUtils.get_first_header(tflow.request, /header/),
+            utils.MessageUtils.get_first_header(tflow.request, /header/)
         ).toEqual("qvalue");
         expect(
-            utils.MessageUtils.get_first_header(tflow.request, /123/),
+            utils.MessageUtils.get_first_header(tflow.request, /123/)
         ).toEqual(undefined);
     });
 
     it("should be possible to get Content-Type", () => {
-        const tflow = TFlow();
+        let tflow = TFlow();
         tflow.request.headers = [["Content-Type", "text/html"]];
         expect(utils.MessageUtils.getContentType(tflow.request)).toEqual(
-            "text/html",
+            "text/html"
         );
     });
 
     it("should be possible to match header", () => {
-        const h1 = ["foo", "bar"];
-        const msg = { headers: [h1] };
+        let h1 = ["foo", "bar"],
+            msg = { headers: [h1] };
         expect(utils.MessageUtils.match_header(msg, /foo/i)).toEqual(h1);
         expect(utils.MessageUtils.match_header(msg, /123/i)).toBeFalsy();
     });
@@ -32,38 +32,38 @@ describe("MessageUtils", () => {
     it("should be possible to get content URL", () => {
         const flow = TFlow();
         // request
-        const view = "bar";
+        let view = "bar";
         expect(
-            utils.MessageUtils.getContentURL(flow, flow.request, view),
+            utils.MessageUtils.getContentURL(flow, flow.request, view)
         ).toEqual(
-            "./flows/d91165be-ca1f-4612-88a9-c0f8696f3e29/request/content/bar.json",
+            "./flows/d91165be-ca1f-4612-88a9-c0f8696f3e29/request/content/bar.json"
         );
         expect(
-            utils.MessageUtils.getContentURL(flow, flow.request, ""),
+            utils.MessageUtils.getContentURL(flow, flow.request, "")
         ).toEqual(
-            "./flows/d91165be-ca1f-4612-88a9-c0f8696f3e29/request/content.data",
+            "./flows/d91165be-ca1f-4612-88a9-c0f8696f3e29/request/content.data"
         );
         // response
         expect(
-            utils.MessageUtils.getContentURL(flow, flow.response, view),
+            utils.MessageUtils.getContentURL(flow, flow.response, view)
         ).toEqual(
-            "./flows/d91165be-ca1f-4612-88a9-c0f8696f3e29/response/content/bar.json",
+            "./flows/d91165be-ca1f-4612-88a9-c0f8696f3e29/response/content/bar.json"
         );
     });
 });
 
 describe("RequestUtils", () => {
     it("should be possible prettify url", () => {
-        const flow = TFlow();
+        let flow = TFlow();
         expect(utils.RequestUtils.pretty_url(flow.request)).toEqual(
-            "http://address:22/path",
+            "http://address:22/path"
         );
     });
 });
 
 describe("parseUrl", () => {
     it("should be possible to parse url", () => {
-        const url = "http://foo:4444/bar";
+        let url = "http://foo:4444/bar";
         expect(utils.parseUrl(url)).toEqual({
             port: 4444,
             scheme: "http",
@@ -90,7 +90,7 @@ it("should be possible to get a start time", () => {
 });
 
 it("should be possible to get an end time", () => {
-    const f: HTTPFlow = THTTPFlow();
+    let f: HTTPFlow = THTTPFlow();
     expect(utils.endTime(f)).toEqual(946681205);
     f.websocket = undefined;
     expect(utils.endTime(f)).toEqual(946681203);
